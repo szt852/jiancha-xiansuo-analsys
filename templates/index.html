@@ -62,9 +62,12 @@
                 
                 <!-- 总体情况 -->
                 <div class="mb-8">
-                    <div class="flex items-center mb-4">
+                    <!-- <div class="flex items-center mb-4">
                         <div class="w-2 h-8 bg-blue-600 mr-3 rounded-full"></div>
                         <h4 class="text-xl font-bold text-gray-800">总体情况</h4>
+                    </div> -->
+                    <div class="flex items-center">
+                        <h4 class="text-xl font-bold text-gray-800 rounded-rectangle">总体情况</h4>
                     </div>
                     <!-- 横向展示统计数字 - 框式设计 -->
                     
@@ -208,9 +211,12 @@
                         <h4 class="text-xl font-bold text-gray-800">建筑类</h4>
                     </div> -->
                 <div class="mb-8">
-                    <div class="flex items-center mb-4">
+                    <!-- <div class="flex items-center mb-4">
                         <div class="w-2 h-8 bg-blue-600 mr-3 rounded-full"></div>
                         <h4 class="text-xl font-bold text-gray-800" style="margin-top: 30px;">建筑类</h4>
+                    </div> -->
+                    <div class="flex items-center">
+                        <h4 class="text-xl font-bold text-gray-800 rounded-rectangle">建筑类</h4>
                     </div>
                     
                     <!-- 涉及人数和金额 - 横向展示卡片设计 -->
@@ -265,21 +271,78 @@
                         </div>
                     </div>
                     
-                    <!-- 建设领域行业分布 -->
+                    <!-- 建筑类其他维度分析 -->
                     <div class="bg-white rounded-lg p-4 mb-6">
                         <h5 class="text-gray-800 font-semibold mb-4 flex items-center">
                             <i class="fa fa-pie-chart text-green-600 mr-2"></i>
-                            行业分布
+                            建筑类其他维度分析
                         </h5>
-                        <div id="jianshe-industry-chart" style="width: 100%; height: 300px;"></div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="p-3 bg-gray-50 rounded-lg h-100">
+                                    <div class="text-center mb-2 font-medium text-gray-700">事件来源</div>
+                                    <div id="jianshe-event-source-chart" style="width: 100%; height: 350px;"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 bg-gray-50 rounded-lg h-100">
+                                    <div class="text-center mb-2 font-medium text-gray-700">所涉行业</div>
+                                    <div id="jianshe-industry-chart" style="width: 100%; height: 350px;"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 bg-gray-50 rounded-lg h-100">
+                                    <div class="text-center mb-2 font-medium text-gray-700">项目性质</div>
+                                    <div id="jianshe-project-nature-chart" style="width: 100%; height: 350px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 建筑类人数金额散点图 -->
+                    <div class="bg-white rounded-lg p-4 mb-6">
+                        <h5 class="text-gray-800 font-semibold mb-4 flex items-center">
+                            <i class="fa fa-scatter-chart text-green-600 mr-2"></i>
+                            涉及人数金额分析
+                        </h5>
+                        <div id="jianshe-scatter-chart" style="width: 100%; height: 400px;"></div>
+                    </div>
+                    
+                    <!-- 建筑类涉及人数较多的项目 -->
+                    <div class="bg-white rounded-lg p-4 mb-6">
+                        <h5 class="text-gray-800 font-semibold mb-4 flex items-center">
+                            <i class="fa fa-table text-green-600 mr-2"></i>
+                            涉及人数较多的项目
+                        </h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped" style="margin: 0 auto; width: 100%; table-layout: fixed;">
+                                <thead>
+                                    <tr class="table-primary">
+                                        <th class="py-2 px-3 text-left" style="width: 400px;">所涉项目（企业）</th>
+                                        <th class="py-2 px-3 text-left">所属区域</th>
+                                        <th class="py-2 px-3 text-left">所涉行业</th>
+                                        <th class="py-2 px-3 text-left">涉及人数</th>
+                                        <th class="py-2 px-3 text-left">涉及金额</th>
+                                        <th class="py-2 px-3 text-left">诉求人</th>
+                                        <th class="py-2 px-3 text-center">诉求内容</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="jianshe-large-projects-table">
+                                    <!-- 数据将通过JavaScript动态填充 -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- 非建类 -->
                 <div class="mb-8">
-                    <div class="flex items-center mb-4">
+                    <!-- <div class="flex items-center mb-4">
                         <div class="w-2 h-8 bg-purple-600 mr-3 rounded-full"></div>
                         <h4 class="text-xl font-bold text-gray-800">非建类</h4>
+                    </div> -->
+                    <div class="flex items-center">
+                        <h4 class="text-xl font-bold text-gray-800 rounded-rectangle">非建类</h4>
                     </div>
                     
                     <!-- 横向展示统计数字 - 框式设计 -->
@@ -334,41 +397,166 @@
                         </div>
                     </div>
                     
-                    <!-- 非建领域行业分布 -->
+                    <!-- 非建类其他维度分析 -->
                     <div class="bg-white rounded-lg p-4 mb-6">
                         <h5 class="text-gray-800 font-semibold mb-4 flex items-center">
                             <i class="fa fa-pie-chart text-purple-600 mr-2"></i>
-                            行业分布
-                        </h5>
-                        <div id="feijian-industry-chart" style="width: 100%; height: 300px;"></div>
-                    </div>
-                </div>
-                
-                <!-- 预警类 -->
-                <div class="mb-8">
-                    <div class="flex items-center mb-4">
-                        <div class="w-2 h-8 bg-red-600 mr-3 rounded-full"></div>
-                        <h4 class="text-xl font-bold text-gray-800">预警类</h4>
-                    </div>
-                    
-                    <!-- 预警类县市区排名 - 饼状图和柱状图组合 -->
-                    <div class="bg-white rounded-lg p-4 mb-6">
-                        <h5 class="text-gray-800 font-semibold mb-4 flex items-center">
-                            <i class="fa fa-trophy text-yellow-500 mr-2"></i>
-                            县市区预警数量排名（预警类）
+                            非建类其他维度分析
                         </h5>
                         <div class="row">
                             <div class="col-md-6">
-                                <div id="warning-district-pie-chart" style="width: 100%; height: 400px;"></div>
+                                <div class="p-3 bg-gray-50 rounded-lg h-100">
+                                    <div class="text-center mb-2 font-medium text-gray-700">事件来源</div>
+                                    <div id="feijian-event-source-chart" style="width: 100%; height: 350px;"></div>
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <div id="warning-district-chart" style="width: 100%; height: 400px;"></div>
+                                <div class="p-3 bg-gray-50 rounded-lg h-100">
+                                    <div class="text-center mb-2 font-medium text-gray-700">所涉行业</div>
+                                    <div id="feijian-industry-chart" style="width: 100%; height: 350px;"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
-
+                    <!-- 非建类人数金额散点图 -->
+                    <div class="bg-white rounded-lg p-4 mb-6">
+                        <h5 class="text-gray-800 font-semibold mb-4 flex items-center">
+                            <i class="fa fa-scatter-chart text-purple-600 mr-2"></i>
+                            涉及人数金额分析
+                        </h5>
+                        <div id="feijian-scatter-chart" style="width: 100%; height: 400px;"></div>
+                    </div>
+                    
+                    <!-- 非建类涉及人数较多的项目 -->
+                    <div class="bg-white rounded-lg p-4 mb-6">
+                        <h5 class="text-gray-800 font-semibold mb-4 flex items-center">
+                            <i class="fa fa-table text-purple-600 mr-2"></i>
+                            涉及人数较多的项目
+                        </h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped" style="margin: 0 auto; width: 100%; table-layout: fixed;">
+                                <thead>
+                                    <tr class="table-primary">
+                                        <th class="py-2 px-3 text-left" style="width: 400px;">所涉项目（企业）</th>
+                                        <th class="py-2 px-3 text-left">所属区域</th>
+                                        <th class="py-2 px-3 text-left">所涉行业</th>
+                                        <th class="py-2 px-3 text-left">涉及人数</th>
+                                        <th class="py-2 px-3 text-right">涉及金额</th>
+                                        <th class="py-2 px-3 text-left">诉求人</th>
+                                        <th class="py-2 px-3 text-center">诉求内容</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="feijian-large-projects-table">
+                                <!-- 数据将通过JavaScript动态填充 -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+                
+                                <!-- 诉求内容查看模态框 -->
+                                <div id="content-modal" style="display: none; position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); flex-direction: column; justify-content: center; align-items: center; z-index: 1000;">
+                                    <div style="background: white; border-radius: 8px; width: 90%; max-width: 600px; max-height: 80vh; display: flex; flex-direction: column;">
+                                        <!-- 模态框头部 -->
+                                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #e2e8f0;">
+                                            <h3 style="font-size: 18px; font-weight: 600; margin: 0;">诉求内容详情</h3>
+                                            <button id="close-modal" style="background: none; border: none; cursor: pointer; color: #64748b; font-size: 20px; padding: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+                                                ×
+                                            </button>
+                                        </div>
+                                        <!-- 模态框内容 -->
+                                        <div id="modal-content" style="padding: 16px; overflow-y: auto; flex: 1; line-height: 1.6; color: #334155; white-space: pre-wrap;"></div>
+                                    </div>
+                                </div>
+                </div>
+                
+                <!-- 预警类 -->
+        <div class="mb-8">
+            <div class="flex items-center">
+                <h4 class="text-xl font-bold text-gray-800 rounded-rectangle">预警类</h4>
+            </div>
+            
+            <!-- 预警类统计数据卡片 -->
+            <div class="row justify-content-start mb-6">
+                <div class="col-lg-4 p-4 duration-300">
+                    <div class="text-center">
+                        <div class="mb-2 inline-block p-2 bg-red-100 rounded-full">
+                            <i class="fa fa-exclamation-triangle text-red-600 text-xl"></i>
+                        </div>
+                        <h5 class="text-gray-700 font-medium mb-2">预警类案件总数</h5>
+                        <p id="warning-case-total" class="text-4xl font-bold text-red-700">0</p>
+                        <!-- <p class="text-sm text-gray-500">事件来源为"安薪在线"的数据</p> -->
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 p-4 duration-300">
+                    <div class="text-center">
+                        <div class="mb-2 inline-block p-2 bg-red-100 rounded-full">
+                            <i class="fa fa-building text-red-600 text-xl"></i>
+                        </div>
+                        <h5 class="text-gray-700 font-medium mb-2">涉及建设单位</h5>
+                        <p id="unique-construction-units" class="text-4xl font-bold text-red-700">0</p>
+                        <!-- <p class="text-sm text-gray-500">统计唯一值数量</p> -->
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 p-4 duration-300">
+                    <div class="text-center">
+                        <div class="mb-2 inline-block p-2 bg-red-100 rounded-full">
+                            <i class="fa fa-industry text-red-600 text-xl"></i>
+                        </div>
+                        <h5 class="text-gray-700 font-medium mb-2">所涉项目（企业）</h5>
+                        <p id="unique-projects" class="text-4xl font-bold text-red-700">0</p>
+                        <!-- <p class="text-sm text-gray-500">统计唯一值数量</p> -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 预警类县市区排名 - 饼状图和柱状图组合 -->
+            <div class="bg-white rounded-lg p-4 mb-6">
+                <h5 class="text-gray-800 font-semibold mb-4 flex items-center">
+                    <i class="fa fa-trophy text-yellow-500 mr-2"></i>
+                    县市区预警数量排名（预警类）
+                </h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div id="warning-district-pie-chart" style="width: 100%; height: 400px;"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div id="warning-district-chart" style="width: 100%; height: 400px;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 预警类维度分析饼图 -->
+            <div class="bg-white rounded-lg p-4 mb-6">
+                <h5 class="text-gray-800 font-semibold mb-4 flex items-center">
+                    <i class="fa fa-pie-chart text-red-600 mr-2"></i>
+                    预警类其他维度分析
+                </h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="p-3 bg-gray-50 rounded-lg h-100">
+                            <div class="text-center mb-2 font-medium text-gray-700">预警行业</div>
+                            <div id="warning-industry-chart" style="width: 100%; height: 350px;"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-gray-50 rounded-lg h-100">
+                            <div class="text-center mb-2 font-medium text-gray-700">预警类型</div>
+                            <div id="warning-type-chart" style="width: 100%; height: 350px;"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-gray-50 rounded-lg h-100">
+                            <div class="text-center mb-2 font-medium text-gray-700">预警状态</div>
+                            <div id="warning-status-chart" style="width: 100%; height: 350px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
             </div>
         </div>
         

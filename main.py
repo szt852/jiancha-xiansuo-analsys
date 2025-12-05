@@ -34,12 +34,21 @@ district_mapping = {
     "长阳土家族自治县": "长阳县",
     "五峰土家族自治县": "五峰县",
     "宜都": "宜都市",
+    "当阳": "当阳市",
+    "枝江": "枝江市",
+    "点军": "点军区",
+    "高新": "高新区",
+    "西陵": "西陵区",
+    "猇亭": "猇亭区",
+    "兴山": "兴山县",
+    "长阳": "长阳县",
+    "秭归": "秭归县",
+    "五峰": "五峰县",
     # 可以根据需要添加更多映射
 }
 
 # 有效区域列表
-valid_districts = ["当阳市", "点军区", "高新区", "五峰县", "伍家岗区", "西陵区", 
-                  "猇亭区", "兴山县", "夷陵区", "宜都市", "长阳县", "枝江市", "秭归县"]
+valid_districts = ["宜都市", "枝江市", "当阳市", "远安县", "兴山县", "秭归县", "长阳县", "五峰县", "夷陵区", "西陵区", "伍家岗区", "点军区", "猇亭区", "高新区"]
 
 # 处理安薪在线数据中的区域格式
 def process_anxin_district(district_str):
@@ -291,7 +300,7 @@ def generate_basic_info(summary_df, current_date):
     # 合并所有文字，用换行符分隔
     basic_info = "\n".join([text1, text2, text3, text4, text5])
     
-    # 按县市区统计建筑领域线索数量
+    # 按县市区统计建设领域线索数量
     jianshe_district_counts = construction_data['所属区域'].value_counts()
     
     # 按县市区统计非建领域线索数量
@@ -300,8 +309,109 @@ def generate_basic_info(summary_df, current_date):
     # 按县市区统计预警信息数量
     warning_district_counts = anxin_data['所属区域'].value_counts()
     
+    # 建筑类其他维度分析数据
+    # 1. 事件来源统计（排除安薪在线）
+    jianshe_event_source_counts = construction_data['事件来源'].value_counts()
+    
+    # 2. 所涉行业统计（排除安薪在线）
+    jianshe_industry_counts = construction_data['所涉行业'].value_counts()
+    
+    # 3. 项目性质统计
+    jianshe_project_nature_counts = construction_data['项目性质'].value_counts()
+    
+    # 4. 涉及人数金额数据（用于散点图）
+    jianshe_scatter_data = []
+    for idx, row in construction_data.iterrows():
+        people = safe_int_convert(row['涉及人数'])
+        amount = safe_int_convert(row['涉及金额'])
+        if people > 0 or amount > 0:
+            jianshe_scatter_data.append({
+                'id': idx + 1,
+                'people': people,
+                'amount': amount
+            })
+    
+    # 计算人数和金额的平均值
+    jianshe_people_avg = sum(item['people'] for item in jianshe_scatter_data) / len(jianshe_scatter_data) if jianshe_scatter_data else 0
+    jianshe_amount_avg = sum(item['amount'] for item in jianshe_scatter_data) / len(jianshe_scatter_data) if jianshe_scatter_data else 0
+    
+    # 非建类其他维度分析数据
+    # 1. 事件来源统计
+    feijian_event_source_counts = non_construction_data['事件来源'].value_counts()
+    
+    # 2. 所涉行业统计（已存在，使用feijian_industry_counts）
+    
+    # 3. 涉及人数金额数据（用于散点图）
+    feijian_scatter_data = []
+    for idx, row in non_construction_data.iterrows():
+        people = safe_int_convert(row['涉及人数'])
+        amount = safe_int_convert(row['涉及金额'])
+        if people > 0 or amount > 0:
+            feijian_scatter_data.append({
+                'id': idx + 1,
+                'people': people,
+                'amount': amount
+            })
+    
+    # 计算人数和金额的平均值
+    feijian_people_avg = sum(item['people'] for item in feijian_scatter_data) / len(feijian_scatter_data) if feijian_scatter_data else 0
+    feijian_amount_avg = sum(item['amount'] for item in feijian_scatter_data) / len(feijian_scatter_data) if feijian_scatter_data else 0
+    
+    # 建筑类涉及人数较多的项目数据（涉及人数>3）
+    jianshe_large_projects = construction_data[construction_data['涉及人数'].apply(safe_int_convert) >= 3].copy()
+    jianshe_large_projects_list = []
+    
+    # 提取所需字段并处理空值
+    for _, row in jianshe_large_projects.iterrows():
+        project_data = {
+            'project_name': str(row['所涉项目（企业）']) if pd.notna(row['所涉项目（企业）']) and str(row['所涉项目（企业）']).strip() else '--',
+            'district': str(row['所属区域']) if pd.notna(row['所属区域']) and str(row['所属区域']).strip() else '--',
+            'industry': str(row['所涉行业']) if pd.notna(row['所涉行业']) and str(row['所涉行业']).strip() else '--',
+            'people_count': int(safe_int_convert(row['涉及人数'])),
+            'amount': float(safe_int_convert(row['涉及金额'])),
+            'applicant': str(row['诉求人']) if pd.notna(row['诉求人']) and str(row['诉求人']).strip() else '--',
+            'content': str(row['诉求内容']) if pd.notna(row['诉求内容']) and str(row['诉求内容']).strip() else '--'
+        }
+        jianshe_large_projects_list.append(project_data)
+    
+    # 非建类涉及人数较多的项目数据（涉及人数>3）
+    feijian_large_projects = non_construction_data[non_construction_data['涉及人数'].apply(safe_int_convert) > 3].copy()
+    feijian_large_projects_list = []
+    
+    # 提取所需字段并处理空值
+    for _, row in feijian_large_projects.iterrows():
+        project_data = {
+            'project_name': str(row['所涉项目（企业）']) if pd.notna(row['所涉项目（企业）']) and str(row['所涉项目（企业）']).strip() else '--',
+            'district': str(row['所属区域']) if pd.notna(row['所属区域']) and str(row['所属区域']).strip() else '--',
+            'industry': str(row['所涉行业']) if pd.notna(row['所涉行业']) and str(row['所涉行业']).strip() else '--',
+            'people_count': int(safe_int_convert(row['涉及人数'])),
+            'amount': float(safe_int_convert(row['涉及金额'])),
+            'applicant': str(row['诉求人']) if pd.notna(row['诉求人']) and str(row['诉求人']).strip() else '--',
+            'content': str(row['诉求内容']) if pd.notna(row['诉求内容']) and str(row['诉求内容']).strip() else '--'
+        }
+        feijian_large_projects_list.append(project_data)
+    
     # 准备所有县市区列表，确保所有分类都有完整的县市区数据
     all_districts = set(full_district_counts.index)
+    
+    # 预警类统计数据
+    # 1. 预警类案件总数（事件来源为"安薪在线"的数据数量）
+    warning_case_total = len(anxin_data)
+    
+    # 2. 涉及建设单位（统计建设单位字段中出现的唯一值数量）
+    unique_construction_units = anxin_data['建设单位'].dropna().nunique()
+    
+    # 3. 所涉项目/企业（统计所涉项目（企业）字段中出现的唯一值数量）
+    unique_projects = anxin_data['所涉项目（企业）'].dropna().nunique()
+    
+    # 4. 所涉行业统计
+    warning_industry_counts = anxin_data['所涉行业'].value_counts()
+    
+    # 5. 预警类型统计（已存在）
+    # warning_types 已定义
+    
+    # 6. 状态统计
+    warning_status_counts = anxin_data['状态'].value_counts()
     
     # 准备数据看板数据，确保所有数值都是Python原生类型
     dashboard_data = {
@@ -322,6 +432,12 @@ def generate_basic_info(summary_df, current_date):
         'feijian_jine': float(feijian_jine),
         'feijian_industry_data': feijian_industry_data,
         'axzx_yvjing_count': int(axzx_yvjing_count),
+        # 预警类统计数据
+        'warning_case_total': int(warning_case_total),
+        'unique_construction_units': int(unique_construction_units),
+        'unique_projects': int(unique_projects),
+        'warning_industry_counts': {k: int(v) for k, v in warning_industry_counts.to_dict().items()},
+        'warning_status_counts': {k: int(v) for k, v in warning_status_counts.to_dict().items()},
         # 将Series.to_dict()的结果转换为Python原生类型的字典
         'district_counts': {k: int(v) for k, v in full_district_counts.to_dict().items()},
         'jianshe_district_counts': {k: int(jianshe_district_counts[k]) if k in jianshe_district_counts else 0 for k in all_districts},
@@ -335,7 +451,22 @@ def generate_basic_info(summary_df, current_date):
             '国企项目': int(state_owned_count),
             '其他商建项目': int(other_count)
         },
-        'event_source_counts': {k: int(v) for k, v in event_source_counts.to_dict().items()}
+        'event_source_counts': {k: int(v) for k, v in event_source_counts.to_dict().items()},
+        # 建筑类其他维度分析数据
+        'jianshe_event_source_counts': {k: int(v) for k, v in jianshe_event_source_counts.to_dict().items()},
+        'jianshe_industry_counts': {k: int(v) for k, v in jianshe_industry_counts.to_dict().items()},
+        'jianshe_project_nature_counts': {k: int(v) for k, v in jianshe_project_nature_counts.to_dict().items()},
+        'jianshe_scatter_data': jianshe_scatter_data,
+        'jianshe_people_avg': float(jianshe_people_avg),
+        'jianshe_amount_avg': float(jianshe_amount_avg),
+        # 非建类其他维度分析数据
+        'feijian_event_source_counts': {k: int(v) for k, v in feijian_event_source_counts.to_dict().items()},
+        'feijian_scatter_data': feijian_scatter_data,
+        'feijian_people_avg': float(feijian_people_avg),
+        'feijian_amount_avg': float(feijian_amount_avg),
+        # 涉及人数较多的项目数据
+        'jianshe_large_projects': jianshe_large_projects_list,
+        'feijian_large_projects': feijian_large_projects_list
     }
     
     return basic_info, dashboard_data
@@ -347,16 +478,16 @@ def generate_statistics_table(summary_df, basic_info):
     stats_data = []
     
     # 添加基本情况行
-    stats_data.append({
-        '基本情况': basic_info,
-        '区域': '',
-        '专班包保（后续有调整）': '',
-        '领域': '',
-        '线索数量': '',
-        '涉稳': '',
-        '预警': '',
-        '欠薪点位': ''
-    })
+    # stats_data.append({
+    #     '基本情况': basic_info,
+    #     '区域': '',
+    #     '专班包保（后续有调整）': '',
+    #     '领域': '',
+    #     '线索数量': '',
+    #     '涉稳': '',
+    #     '预警': '',
+    #     '欠薪点位': ''
+    # })
     
     # 区域到专班包保人的映射关系
     district_boss_mapping = {
@@ -376,8 +507,15 @@ def generate_statistics_table(summary_df, basic_info):
         "高新区": "侯民杰"
     }
     
+    row_number=0
     # 对于每个有效区域，创建建设和非建两行数据
     for district in valid_districts:
+        if row_number==0:
+            basic_info=basic_info
+        else:
+            basic_info=""
+        row_number=row_number+1
+
         # 建设领域数据统计 - 只统计预警类型字段文本长度为0的记录
         construction_data = summary_df[(summary_df['所属区域'] == district) & 
                                       (summary_df['所涉领域'] == '建筑')]
@@ -438,7 +576,7 @@ def generate_statistics_table(summary_df, basic_info):
         
         # 添加建设领域的数据行
         stats_data.append({
-            '基本情况': '',
+            '基本情况': basic_info,
             '区域': district,
             '专班包保（后续有调整）': boss_name,  # 根据区域自动填充专班包保人
             '领域': '建设',
@@ -470,25 +608,25 @@ async def read_root(request: Request):
     """返回主页面"""
     return templates.TemplateResponse("index.html", {"request": request})
 
-@app.get("/test")
-async def test_page(request: Request):
-    return templates.TemplateResponse("test.html", {"request": request})
+# @app.get("/test")
+# async def test_page(request: Request):
+#     return templates.TemplateResponse("test.html", {"request": request})
 
-@app.post("/test_upload/")
-async def test_upload(file_12345: UploadFile = File(...), file_anxin: UploadFile = File(...)):
-    """测试文件上传功能的端点"""
-    print(f"测试上传端点收到请求：{file_12345.filename}, {file_anxin.filename}")
-    try:
-        # 简单读取文件内容以验证上传
-        file_12345_content = await file_12345.read()
-        file_anxin_content = await file_anxin.read()
-        print(f"文件内容读取成功，大小分别为：{len(file_12345_content)} 字节, {len(file_anxin_content)} 字节")
-        return {"status": "success", "message": "文件上传成功", "files": [file_12345.filename, file_anxin.filename]}
-    except Exception as e:
-        print(f"测试上传时出错: {str(e)}")
-        import traceback
-        print(traceback.format_exc())
-        raise HTTPException(status_code=500, detail=f"测试上传失败: {str(e)}")
+# @app.post("/test_upload/")
+# async def test_upload(file_12345: UploadFile = File(...), file_anxin: UploadFile = File(...)):
+#     """测试文件上传功能的端点"""
+#     print(f"测试上传端点收到请求：{file_12345.filename}, {file_anxin.filename}")
+#     try:
+#         # 简单读取文件内容以验证上传
+#         file_12345_content = await file_12345.read()
+#         file_anxin_content = await file_anxin.read()
+#         print(f"文件内容读取成功，大小分别为：{len(file_12345_content)} 字节, {len(file_anxin_content)} 字节")
+#         return {"status": "success", "message": "文件上传成功", "files": [file_12345.filename, file_anxin.filename]}
+#     except Exception as e:
+#         print(f"测试上传时出错: {str(e)}")
+#         import traceback
+#         print(traceback.format_exc())
+#         raise HTTPException(status_code=500, detail=f"测试上传失败: {str(e)}")
 
 @app.post("/process_files/")
 async def process_files(file_12345: UploadFile = File(...), file_anxin: UploadFile = File(...)):
@@ -584,24 +722,45 @@ async def process_files(file_12345: UploadFile = File(...), file_anxin: UploadFi
                 # 写入统计表
                 stats_df.to_excel(writer, sheet_name='劳动监察线索数据情况统计表', index=False)
                 
-                # 合并基本情况单元格（只合并基本情况列）
+                # 合并基本情况单元格（A2到A29）
                 worksheet = writer.sheets['劳动监察线索数据情况统计表']
                 from openpyxl.utils import get_column_letter
+                from openpyxl.styles import Alignment
                 
-                # 查找基本情况列的索引（假设在第一列）
-                basic_info_col_index = 1  # 基本情况列在Excel中是第一列
+                # 基本情况列在Excel中是第一列
+                basic_info_col_index = 1
                 
-                # 找到基本情况列中有内容的最大行数
-                max_row_with_content = 2  # 初始为第二行（数据从第二行开始）
-                for row in range(3, worksheet.max_row + 1):  # 从第三行开始检查
-                    cell = worksheet.cell(row=row, column=basic_info_col_index)
-                    if cell.value and str(cell.value).strip():
-                        max_row_with_content = row
+                # 保存A2单元格的内容，用于合并后填充
+                a2_value = worksheet.cell(row=2, column=basic_info_col_index).value
                 
-                # 只合并基本情况列中有内容的单元格
-                if max_row_with_content > 2:
-                    worksheet.merge_cells(start_row=2, start_column=basic_info_col_index, 
-                                        end_row=max_row_with_content, end_column=basic_info_col_index)
+                # 合并A2到A29单元格
+                worksheet.merge_cells(start_row=2, start_column=basic_info_col_index, 
+                                    end_row=29, end_column=basic_info_col_index)
+                
+                # 用A2的内容填充合并后的单元格并设置垂直居中
+                a_cell = worksheet.cell(row=2, column=basic_info_col_index)
+                a_cell.value = a2_value
+                a_cell.alignment = Alignment(vertical='center')
+                
+                # 合并B列的指定单元格对（B2~B3、B4~B5等）
+                for i in range(2, 30, 2):
+                    # 保存B列当前单元格的值
+                    b_value = worksheet.cell(row=i, column=2).value
+                    # 合并B列两个相邻单元格
+                    worksheet.merge_cells(start_row=i, start_column=2, end_row=i+1, end_column=2)
+                    # 用第一个单元格的内容填充并设置垂直居中
+                    b_cell = worksheet.cell(row=i, column=2)
+                    b_cell.value = b_value
+                    b_cell.alignment = Alignment(vertical='center')
+                    
+                    # 保存C列当前单元格的值
+                    c_value = worksheet.cell(row=i, column=3).value
+                    # 合并C列两个相邻单元格
+                    worksheet.merge_cells(start_row=i, start_column=3, end_row=i+1, end_column=3)
+                    # 用第一个单元格的内容填充并设置垂直居中
+                    c_cell = worksheet.cell(row=i, column=3)
+                    c_cell.value = c_value
+                    c_cell.alignment = Alignment(vertical='center')
                 
                 # 调整列宽以适应内容
                 for column in worksheet.columns:
@@ -615,7 +774,7 @@ async def process_files(file_12345: UploadFile = File(...), file_anxin: UploadFi
                             pass
                     adjusted_width = min(max_length + 2, 50)
                     worksheet.column_dimensions[column_letter].width = adjusted_width
-            
+                    
             # 重置文件指针
             output.seek(0)
             print("Excel文件写入完成")
@@ -649,6 +808,6 @@ async def process_files(file_12345: UploadFile = File(...), file_anxin: UploadFi
         raise HTTPException(status_code=500, detail=f"处理文件时发生未捕获的错误: {str(e)}")
 
 # 运行应用
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8002)
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run(app, host="0.0.0.0", port=8002)

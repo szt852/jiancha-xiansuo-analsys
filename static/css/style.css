@@ -123,6 +123,19 @@ body {
     margin-right: 10px;
 }
 
+
+.rounded-rectangle {
+  /* width: 200px;       宽度 */
+  /* height: 100px;      高度 */
+  background-color: #0d6efd; /* 背景颜色 */
+  border: 1px solid #ddd;    /* 边框 */
+  border-radius: 5px;      /* 圆角大小 */
+  text-align: center;
+  color: #ffffff;
+}
+
+
+
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
